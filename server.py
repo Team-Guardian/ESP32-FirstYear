@@ -12,11 +12,11 @@ s.bind((TCP_IP, TCP_PORT))
 s.listen(1)
 
 conn, addr = s.accept()
-print 'Connection address:', addr
+print ('Connection address:', addr)
 while 1:
     data = conn.recv(BUFFER_SIZE)
     if not data: break
-    print "Faces detected:", data
-    print "Type of data being sent:", type(data)
+    print ("Faces detected:", data)
+    print ("Type of data being sent:", type(data))
     conn.send(data)  # echo
 conn.close()

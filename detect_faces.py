@@ -67,7 +67,7 @@ for i in range(0, detections.shape[2]):
 			cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
 
 
-faceDetectedCount = str(faceDetectedCount)
+faceDetectedCount = str(faceDetectedCount).encode()
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
