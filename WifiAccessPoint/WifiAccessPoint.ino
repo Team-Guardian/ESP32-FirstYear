@@ -6,7 +6,7 @@ const char* ssid     = "ESP32-Access-Point";
 const char* password = "123456789";
 
 // Set web server port number to 80
-WiFiServer server(80);
+WiFiServer server(23);
 
 // Variable to store the HTTP request
 String header;
@@ -31,7 +31,7 @@ void setup() {
   // Connect to Wi-Fi network with SSID and password
   Serial.print("Setting AP (Access Point)…");
   // Remove the password parameter, if you want the AP (Access Point) to be open
-  WiFi.softAP(ssid, password);
+  WiFi.softAP(ssid);
 
   IPAddress IP = WiFi.softAPIP();
   Serial.print("AP IP address: ");
@@ -51,6 +51,26 @@ void loop(){
         char c = client.read();             // read a byte, then
         Serial.write(c);                    // print it out the serial monitor
         header += c;
+        int incomingData = 0;
+        incomingData = c;
+        
+        if ( incomingData == 49 )
+          {
+            digitalWrite(output26, HIGH);
+            digitalWrite(output27, LOW);
+          }
+        else if (incomingData >=50)
+          {
+            digitalWrite(output26, HIGH);
+            digitalWrite(output27, HIGH);
+          }
+        else
+          {
+            output26State = "off";
+            digitalWrite(output26, LOW);
+            digitalWrite(output27, LOW);
+          }
+        
         if (c == '\n') {                    // if the byte is a newline character
           // if the current line is blank, you got two newline characters in a row.
           // that's the end of the client HTTP request, so send a response:
