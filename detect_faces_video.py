@@ -12,6 +12,11 @@ import cv2
 import socket
 import time
 
+TCP_IP = '192.168.4.1'
+TCP_PORT = 23
+BUFFER_SIZE = 1024
+faceDetectedCount = 0
+
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-p", "--prototxt", required=True,
@@ -58,13 +63,19 @@ while True:
 		print(confidence)
 		# filter out weak detections by ensuring the `confidence` is
 		# greater than the minimum confidence
+		
 		if confidence < args["confidence"]:
-			
+			faceDetectedCount = 0
 			continue
+			
+
 
 		
 		# compute the (x, y)-coordinates of the bounding box for the
 		# object
+		
+		faceDetectedCount =+1
+
 		box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
 		(startX, startY, endX, endY) = box.astype("int")
  
@@ -80,6 +91,14 @@ while True:
 	# show the output frame
 	cv2.imshow("Frame", frame)
 	key = cv2.waitKey(1) & 0xFF
+
+	faceDetectedCount = str(faceDetectedCount).encode()
+
+	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	s.connect((TCP_IP, TCP_PORT))
+	s.send(faceDetectedCount)
+	data = s.recv(BUFFER_SIZE)
+	s.close()
  
 	# if the `q` key was pressed, break from the loop
 	if key == ord("q"):
