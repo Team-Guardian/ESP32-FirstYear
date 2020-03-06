@@ -48,15 +48,10 @@ for i in range(0, detections.shape[2]):
 	# extract the confidence (i.e., probability) associated with the
 	# prediction
 	confidence = detections[0, 0, i, 2]
-	print("confidence is")
-	print(confidence)
-	print("i is")
-	print(i)
 
 	# filter out weak detections by ensuring the `confidence` is
 	# greater than the minimum confidence
 	if confidence > args["confidence"]:
-		print ("face detected")
 		# compute the (x, y)-coordinates of the bounding box for the
 		# object
 		faceDetectedCount += 1
@@ -72,31 +67,15 @@ for i in range(0, detections.shape[2]):
 		cv2.putText(image, text, (startX, y),
 			cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
 
-		exit()
+faceDetectedCount = str(faceDetectedCount).encode()
 
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect((TCP_IP, TCP_PORT))
+s.send(faceDetectedCount)
+data = s.recv(BUFFER_SIZE)
+s.close()
 
-		faceDetectedCount = str(faceDetectedCount).encode()
-
-
-		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		s.connect((TCP_IP, TCP_PORT))
-		s.send(faceDetectedCount)
-		data = s.recv(BUFFER_SIZE)
-		s.close()
-
-		
-
-	else:
-		faceDetectedCount = str(faceDetectedCount).encode()
-
-
-		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		s.connect((TCP_IP, TCP_PORT))
-		s.send(faceDetectedCount)
-		data = s.recv(BUFFER_SIZE)
-		s.close()
-
-		exit()
+exit()
 
 # show the output image
 cv2.imshow("Output", image)

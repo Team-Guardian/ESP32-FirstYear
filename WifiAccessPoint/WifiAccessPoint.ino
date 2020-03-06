@@ -5,7 +5,7 @@
 const char* ssid     = "ESP32-Access-Point";
 const char* password = "123456789";
 
-// Set web server port number to 80
+// Set web server port number to 80  for wifi or 23 for face detection
 WiFiServer server(23);
 
 // Variable to store the HTTP request
@@ -53,8 +53,8 @@ void loop(){
         header += c;
         int incomingData = 0;
         incomingData = c;
-        
-        if ( incomingData == 49 )
+        client.write(6);
+        if (incomingData == 49)
           {
             digitalWrite(output26, HIGH);
             digitalWrite(output27, LOW);
