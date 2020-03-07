@@ -59,7 +59,7 @@ while True:
 	for i in range(0, detections.shape[2]):
 		# extract the confidence (i.e., probability) associated with the
 	# prediction
-		time.sleep(0.001)
+		#time.sleep(0.001)
 		confidence = detections[0, 0, i, 2]
 		
 		# filter out weak detections by ensuring the `confidence` is
