@@ -42,16 +42,18 @@ while True:
 	# to have a maximum width of 400 pixels
 	frame = vs.read()
 	frame = imutils.resize(frame, width=400)
- 
+	
 	# grab the frame dimensions and convert it to a blob
 	(h, w) = frame.shape[:2]
 	blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)), 1.0,
 		(300, 300), (104.0, 177.0, 123.0))
- 
+	faceDetectedCount = 0
 	# pass the blob through the network and obtain the detections and
 	# predictions
 	net.setInput(blob)
 	detections = net.forward()
+	
+
 
 	# loop over the detections
 	for i in range(0, detections.shape[2]):
@@ -60,12 +62,11 @@ while True:
 		time.sleep(0.001)
 		confidence = detections[0, 0, i, 2]
 		
-		print(confidence)
 		# filter out weak detections by ensuring the `confidence` is
 		# greater than the minimum confidence
 		
 		if confidence < args["confidence"]:
-			faceDetectedCount = 0
+		
 			continue
 			
 
@@ -74,13 +75,13 @@ while True:
 		# compute the (x, y)-coordinates of the bounding box for the
 		# object
 		
-		faceDetectedCount =+1
+		faceDetectedCount += 1
 
 		box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
 		(startX, startY, endX, endY) = box.astype("int")
- 
 		# draw the bounding box of the face along with the associated
 		# probability
+	
 		text = "{:.2f}%".format(confidence * 100)
 		y = startY - 10 if startY - 10 > 10 else startY + 10
 		cv2.rectangle(frame, (startX, startY), (endX, endY),
@@ -91,7 +92,7 @@ while True:
 	# show the output frame
 	cv2.imshow("Frame", frame)
 	key = cv2.waitKey(1) & 0xFF
-
+	print(faceDetectedCount)
 	faceDetectedCount = str(faceDetectedCount).encode()
 
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
