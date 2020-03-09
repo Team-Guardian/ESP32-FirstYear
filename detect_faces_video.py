@@ -34,7 +34,7 @@ net = cv2.dnn.readNetFromCaffe(args["prototxt"], args["model"])
 # initialize the video stream and allow the cammera sensor to warmup
 print("[INFO] starting video stream...")
 vs = VideoStream(src=0).start()
-time.sleep(2.0)
+# time.sleep(2.0)
 
 # loop over the frames from the video stream
 while True:
