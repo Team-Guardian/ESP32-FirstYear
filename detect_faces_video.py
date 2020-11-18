@@ -12,6 +12,11 @@ import cv2
 import socket
 import time
 
+TCP_IP = '192.168.4.1'
+TCP_PORT = 23
+BUFFER_SIZE = 1024
+faceDetectedCount = 0
+
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-p", "--prototxt", required=True,
@@ -29,7 +34,7 @@ net = cv2.dnn.readNetFromCaffe(args["prototxt"], args["model"])
 # initialize the video stream and allow the cammera sensor to warmup
 print("[INFO] starting video stream...")
 vs = VideoStream(src=0).start()
-time.sleep(2.0)
+# time.sleep(2.0)
 
 # loop over the frames from the video stream
 while True:
@@ -37,39 +42,46 @@ while True:
 	# to have a maximum width of 400 pixels
 	frame = vs.read()
 	frame = imutils.resize(frame, width=400)
- 
+	
 	# grab the frame dimensions and convert it to a blob
 	(h, w) = frame.shape[:2]
 	blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)), 1.0,
 		(300, 300), (104.0, 177.0, 123.0))
- 
+	faceDetectedCount = 0
 	# pass the blob through the network and obtain the detections and
 	# predictions
 	net.setInput(blob)
 	detections = net.forward()
+	
+
 
 	# loop over the detections
 	for i in range(0, detections.shape[2]):
 		# extract the confidence (i.e., probability) associated with the
 	# prediction
-		time.sleep(0.001)
+		#time.sleep(0.001)
 		confidence = detections[0, 0, i, 2]
 		
-		print(confidence)
 		# filter out weak detections by ensuring the `confidence` is
 		# greater than the minimum confidence
+		
 		if confidence < args["confidence"]:
-			
+		
 			continue
+			
+
 
 		
 		# compute the (x, y)-coordinates of the bounding box for the
 		# object
+		
+		faceDetectedCount += 1
+
 		box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
 		(startX, startY, endX, endY) = box.astype("int")
- 
 		# draw the bounding box of the face along with the associated
 		# probability
+	
 		text = "{:.2f}%".format(confidence * 100)
 		y = startY - 10 if startY - 10 > 10 else startY + 10
 		cv2.rectangle(frame, (startX, startY), (endX, endY),
@@ -80,6 +92,14 @@ while True:
 	# show the output frame
 	cv2.imshow("Frame", frame)
 	key = cv2.waitKey(1) & 0xFF
+	print(faceDetectedCount)
+	faceDetectedCount = str(faceDetectedCount).encode()
+
+	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	s.connect((TCP_IP, TCP_PORT))
+	s.send(faceDetectedCount)
+	data = s.recv(BUFFER_SIZE)
+	s.close()
  
 	# if the `q` key was pressed, break from the loop
 	if key == ord("q"):
